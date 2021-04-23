@@ -25,9 +25,6 @@ func NewVpc(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.BaseCidr == nil {
-		return nil, errors.New("invalid value for required argument 'BaseCidr'")
-	}
 	var resource Vpc
 	err := ctx.RegisterRemoteComponentResource("awsvpc:index:Vpc", name, args, &resource, opts...)
 	if err != nil {
@@ -37,10 +34,16 @@ func NewVpc(ctx *pulumi.Context,
 }
 
 type vpcArgs struct {
+	// List of availability zones to use for your VPC.
+	AvailabilityZoneNames []string `pulumi:"availabilityZoneNames"`
 	// The primary CIDRv4 block to be associated with the VPC.
 	BaseCidr string `pulumi:"baseCidr"`
-	// Whether or not to create a private hosted zone attached to the VPC.
+	// Whether to create a private hosted zone attached to the VPC.
 	CreatePrivateZone *bool `pulumi:"createPrivateZone"`
+	// Whether to add the DynamoDB endpoint to the VPC.
+	EnableDynamoDBEndpoint *bool `pulumi:"enableDynamoDBEndpoint"`
+	// Whether to add the S3 endpoint to the VPC.
+	EnableS3Endpoint *bool `pulumi:"enableS3Endpoint"`
 	// Tags to be applied to each created resource.
 	Tags map[string]string `pulumi:"tags"`
 	// The name of the private zone to create if createPrivateZone is set to true.
@@ -49,10 +52,16 @@ type vpcArgs struct {
 
 // The set of arguments for constructing a Vpc resource.
 type VpcArgs struct {
+	// List of availability zones to use for your VPC.
+	AvailabilityZoneNames []string
 	// The primary CIDRv4 block to be associated with the VPC.
-	BaseCidr pulumi.StringInput
-	// Whether or not to create a private hosted zone attached to the VPC.
+	BaseCidr string
+	// Whether to create a private hosted zone attached to the VPC.
 	CreatePrivateZone *bool
+	// Whether to add the DynamoDB endpoint to the VPC.
+	EnableDynamoDBEndpoint pulumi.BoolPtrInput
+	// Whether to add the S3 endpoint to the VPC.
+	EnableS3Endpoint pulumi.BoolPtrInput
 	// Tags to be applied to each created resource.
 	Tags pulumi.StringMapInput
 	// The name of the private zone to create if createPrivateZone is set to true.

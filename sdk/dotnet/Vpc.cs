@@ -46,17 +46,41 @@ namespace Pulumi.Awsvpc
 
     public sealed class VpcArgs : Pulumi.ResourceArgs
     {
+        [Input("availabilityZoneNames", required: true)]
+        private ImmutableArray<string>? _availabilityZoneNames;
+
+        /// <summary>
+        /// List of availability zones to use for your VPC.
+        /// </summary>
+        public ImmutableArray<string> AvailabilityZoneNames
+        {
+            get => _availabilityZoneNames ?? (_availabilityZoneNames = new ImmutableArray<string>());
+            set => _availabilityZoneNames = value;
+        }
+
         /// <summary>
         /// The primary CIDRv4 block to be associated with the VPC.
         /// </summary>
         [Input("baseCidr", required: true)]
-        public Input<string> BaseCidr { get; set; } = null!;
+        public string BaseCidr { get; set; } = null!;
 
         /// <summary>
-        /// Whether or not to create a private hosted zone attached to the VPC.
+        /// Whether to create a private hosted zone attached to the VPC.
         /// </summary>
         [Input("createPrivateZone")]
         public bool? CreatePrivateZone { get; set; }
+
+        /// <summary>
+        /// Whether to add the DynamoDB endpoint to the VPC.
+        /// </summary>
+        [Input("enableDynamoDBEndpoint")]
+        public Input<bool>? EnableDynamoDBEndpoint { get; set; }
+
+        /// <summary>
+        /// Whether to add the S3 endpoint to the VPC.
+        /// </summary>
+        [Input("enableS3Endpoint")]
+        public Input<bool>? EnableS3Endpoint { get; set; }
 
         [Input("tags")]
         private InputMap<string>? _tags;

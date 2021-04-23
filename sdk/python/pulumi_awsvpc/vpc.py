@@ -13,48 +13,95 @@ __all__ = ['VpcArgs', 'Vpc']
 @pulumi.input_type
 class VpcArgs:
     def __init__(__self__, *,
-                 base_cidr: pulumi.Input[str],
+                 availability_zone_names: Sequence[str],
+                 base_cidr: str,
                  create_private_zone: Optional[bool] = None,
+                 enable_dynamo_db_endpoint: Optional[pulumi.Input[bool]] = None,
+                 enable_s3_endpoint: Optional[pulumi.Input[bool]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  zone_name: Optional[pulumi.Input[str]] = None):
         """
         The set of arguments for constructing a Vpc resource.
-        :param pulumi.Input[str] base_cidr: The primary CIDRv4 block to be associated with the VPC.
-        :param bool create_private_zone: Whether or not to create a private hosted zone attached to the VPC.
+        :param Sequence[str] availability_zone_names: List of availability zones to use for your VPC.
+        :param str base_cidr: The primary CIDRv4 block to be associated with the VPC.
+        :param bool create_private_zone: Whether to create a private hosted zone attached to the VPC.
+        :param pulumi.Input[bool] enable_dynamo_db_endpoint: Whether to add the DynamoDB endpoint to the VPC.
+        :param pulumi.Input[bool] enable_s3_endpoint: Whether to add the S3 endpoint to the VPC.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Tags to be applied to each created resource.
         :param pulumi.Input[str] zone_name: The name of the private zone to create if createPrivateZone is set to true.
         """
+        pulumi.set(__self__, "availability_zone_names", availability_zone_names)
         pulumi.set(__self__, "base_cidr", base_cidr)
         if create_private_zone is not None:
             pulumi.set(__self__, "create_private_zone", create_private_zone)
+        if enable_dynamo_db_endpoint is not None:
+            pulumi.set(__self__, "enable_dynamo_db_endpoint", enable_dynamo_db_endpoint)
+        if enable_s3_endpoint is not None:
+            pulumi.set(__self__, "enable_s3_endpoint", enable_s3_endpoint)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
         if zone_name is not None:
             pulumi.set(__self__, "zone_name", zone_name)
 
     @property
+    @pulumi.getter(name="availabilityZoneNames")
+    def availability_zone_names(self) -> Sequence[str]:
+        """
+        List of availability zones to use for your VPC.
+        """
+        return pulumi.get(self, "availability_zone_names")
+
+    @availability_zone_names.setter
+    def availability_zone_names(self, value: Sequence[str]):
+        pulumi.set(self, "availability_zone_names", value)
+
+    @property
     @pulumi.getter(name="baseCidr")
-    def base_cidr(self) -> pulumi.Input[str]:
+    def base_cidr(self) -> str:
         """
         The primary CIDRv4 block to be associated with the VPC.
         """
         return pulumi.get(self, "base_cidr")
 
     @base_cidr.setter
-    def base_cidr(self, value: pulumi.Input[str]):
+    def base_cidr(self, value: str):
         pulumi.set(self, "base_cidr", value)
 
     @property
     @pulumi.getter(name="createPrivateZone")
     def create_private_zone(self) -> Optional[bool]:
         """
-        Whether or not to create a private hosted zone attached to the VPC.
+        Whether to create a private hosted zone attached to the VPC.
         """
         return pulumi.get(self, "create_private_zone")
 
     @create_private_zone.setter
     def create_private_zone(self, value: Optional[bool]):
         pulumi.set(self, "create_private_zone", value)
+
+    @property
+    @pulumi.getter(name="enableDynamoDBEndpoint")
+    def enable_dynamo_db_endpoint(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Whether to add the DynamoDB endpoint to the VPC.
+        """
+        return pulumi.get(self, "enable_dynamo_db_endpoint")
+
+    @enable_dynamo_db_endpoint.setter
+    def enable_dynamo_db_endpoint(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "enable_dynamo_db_endpoint", value)
+
+    @property
+    @pulumi.getter(name="enableS3Endpoint")
+    def enable_s3_endpoint(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Whether to add the S3 endpoint to the VPC.
+        """
+        return pulumi.get(self, "enable_s3_endpoint")
+
+    @enable_s3_endpoint.setter
+    def enable_s3_endpoint(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "enable_s3_endpoint", value)
 
     @property
     @pulumi.getter
@@ -86,8 +133,11 @@ class Vpc(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 base_cidr: Optional[pulumi.Input[str]] = None,
+                 availability_zone_names: Optional[Sequence[str]] = None,
+                 base_cidr: Optional[str] = None,
                  create_private_zone: Optional[bool] = None,
+                 enable_dynamo_db_endpoint: Optional[pulumi.Input[bool]] = None,
+                 enable_s3_endpoint: Optional[pulumi.Input[bool]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  zone_name: Optional[pulumi.Input[str]] = None,
                  __props__=None):
@@ -95,8 +145,11 @@ class Vpc(pulumi.ComponentResource):
         Create a Vpc resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
-        :param pulumi.Input[str] base_cidr: The primary CIDRv4 block to be associated with the VPC.
-        :param bool create_private_zone: Whether or not to create a private hosted zone attached to the VPC.
+        :param Sequence[str] availability_zone_names: List of availability zones to use for your VPC.
+        :param str base_cidr: The primary CIDRv4 block to be associated with the VPC.
+        :param bool create_private_zone: Whether to create a private hosted zone attached to the VPC.
+        :param pulumi.Input[bool] enable_dynamo_db_endpoint: Whether to add the DynamoDB endpoint to the VPC.
+        :param pulumi.Input[bool] enable_s3_endpoint: Whether to add the S3 endpoint to the VPC.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Tags to be applied to each created resource.
         :param pulumi.Input[str] zone_name: The name of the private zone to create if createPrivateZone is set to true.
         """
@@ -123,8 +176,11 @@ class Vpc(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 base_cidr: Optional[pulumi.Input[str]] = None,
+                 availability_zone_names: Optional[Sequence[str]] = None,
+                 base_cidr: Optional[str] = None,
                  create_private_zone: Optional[bool] = None,
+                 enable_dynamo_db_endpoint: Optional[pulumi.Input[bool]] = None,
+                 enable_s3_endpoint: Optional[pulumi.Input[bool]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  zone_name: Optional[pulumi.Input[str]] = None,
                  __props__=None):
@@ -141,10 +197,15 @@ class Vpc(pulumi.ComponentResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = VpcArgs.__new__(VpcArgs)
 
+            if availability_zone_names is None and not opts.urn:
+                raise TypeError("Missing required property 'availability_zone_names'")
+            __props__.__dict__["availability_zone_names"] = availability_zone_names
             if base_cidr is None and not opts.urn:
                 raise TypeError("Missing required property 'base_cidr'")
             __props__.__dict__["base_cidr"] = base_cidr
             __props__.__dict__["create_private_zone"] = create_private_zone
+            __props__.__dict__["enable_dynamo_db_endpoint"] = enable_dynamo_db_endpoint
+            __props__.__dict__["enable_s3_endpoint"] = enable_s3_endpoint
             __props__.__dict__["tags"] = tags
             __props__.__dict__["zone_name"] = zone_name
             __props__.__dict__["vpc_id"] = None

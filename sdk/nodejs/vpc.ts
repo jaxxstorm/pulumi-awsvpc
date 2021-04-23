@@ -35,11 +35,17 @@ export class Vpc extends pulumi.ComponentResource {
         let inputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
+            if ((!args || args.availabilityZoneNames === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'availabilityZoneNames'");
+            }
             if ((!args || args.baseCidr === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'baseCidr'");
             }
+            inputs["availabilityZoneNames"] = args ? args.availabilityZoneNames : undefined;
             inputs["baseCidr"] = args ? args.baseCidr : undefined;
             inputs["createPrivateZone"] = args ? args.createPrivateZone : undefined;
+            inputs["enableDynamoDBEndpoint"] = args ? args.enableDynamoDBEndpoint : undefined;
+            inputs["enableS3Endpoint"] = args ? args.enableS3Endpoint : undefined;
             inputs["tags"] = args ? args.tags : undefined;
             inputs["zoneName"] = args ? args.zoneName : undefined;
             inputs["vpcId"] = undefined /*out*/;
@@ -58,13 +64,25 @@ export class Vpc extends pulumi.ComponentResource {
  */
 export interface VpcArgs {
     /**
+     * List of availability zones to use for your VPC.
+     */
+    readonly availabilityZoneNames: string[];
+    /**
      * The primary CIDRv4 block to be associated with the VPC.
      */
-    readonly baseCidr: pulumi.Input<string>;
+    readonly baseCidr: string;
     /**
-     * Whether or not to create a private hosted zone attached to the VPC.
+     * Whether to create a private hosted zone attached to the VPC.
      */
     readonly createPrivateZone?: boolean;
+    /**
+     * Whether to add the DynamoDB endpoint to the VPC.
+     */
+    readonly enableDynamoDBEndpoint?: pulumi.Input<boolean>;
+    /**
+     * Whether to add the S3 endpoint to the VPC.
+     */
+    readonly enableS3Endpoint?: pulumi.Input<boolean>;
     /**
      * Tags to be applied to each created resource.
      */

@@ -5,6 +5,13 @@
         "awsvpc:index:Vpc": {
             "isComponent": true,
             "inputProperties": {
+                "availabilityZoneNames": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "List of availability zones to use for your VPC."
+                },
                 "baseCidr": {
                     "type": "string",
                     "description": "The primary CIDRv4 block to be associated with the VPC."
@@ -15,18 +22,29 @@
                 },
                 "createPrivateZone": {
                     "type": "boolean",
-                    "description": "Whether or not to create a private hosted zone attached to the VPC."
+                    "description": "Whether to create a private hosted zone attached to the VPC."
                 },
                 "tags": {
                     "type": "object",
                     "description": "Tags to be applied to each created resource."
+                },
+                "enableS3Endpoint": {
+                    "type": "boolean",
+                    "description": "Whether to add the S3 endpoint to the VPC."
+                },
+                "enableDynamoDBEndpoint": {
+                    "type": "boolean",
+                    "description": "Whether to add the DynamoDB endpoint to the VPC."
                 }
             },
             "requiredInputs": [
-                "baseCidr"
+                "baseCidr",
+                "availabilityZoneNames"
             ],
             "plainInputs": [
-                "createPrivateZone"
+                "createPrivateZone",
+                "baseCidr",
+                "availabilityZoneNames"
             ],
             "properties": {
                 "vpcId": {
