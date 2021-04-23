@@ -4,7 +4,7 @@
 
 # Export this package's modules as members:
 from .provider import *
-from .static_page import *
+from .vpc import *
 
 def _register_module():
     import pulumi
@@ -18,14 +18,14 @@ def _register_module():
             return Module._version
 
         def construct(self, name: str, typ: str, urn: str) -> pulumi.Resource:
-            if typ == "xyz:index:StaticPage":
-                return StaticPage(name, pulumi.ResourceOptions(urn=urn))
+            if typ == "awsvpc:index:Vpc":
+                return Vpc(name, pulumi.ResourceOptions(urn=urn))
             else:
                 raise Exception(f"unknown resource type {typ}")
 
 
     _module_instance = Module()
-    pulumi.runtime.register_resource_module("xyz", "index", _module_instance)
+    pulumi.runtime.register_resource_module("awsvpc", "index", _module_instance)
 
 
     class Package(pulumi.runtime.ResourcePackage):
@@ -35,11 +35,11 @@ def _register_module():
             return Package._version
 
         def construct_provider(self, name: str, typ: str, urn: str) -> pulumi.ProviderResource:
-            if typ != "pulumi:providers:xyz":
+            if typ != "pulumi:providers:awsvpc":
                 raise Exception(f"unknown provider type {typ}")
             return Provider(name, pulumi.ResourceOptions(urn=urn))
 
 
-    pulumi.runtime.register_resource_package("xyz", Package())
+    pulumi.runtime.register_resource_package("awsvpc", Package())
 
 _register_module()

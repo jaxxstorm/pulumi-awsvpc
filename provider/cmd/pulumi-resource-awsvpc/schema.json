@@ -1,0 +1,69 @@
+{
+    "name": "awsvpc",
+    "license": "MPLv2",
+    "resources": {
+        "awsvpc:index:Vpc": {
+            "isComponent": true,
+            "inputProperties": {
+                "baseCidr": {
+                    "type": "string",
+                    "description": "The primary CIDRv4 block to be associated with the VPC."
+                },
+                "zoneName": {
+                    "type": "string",
+                    "description": "The name of the private zone to create if createPrivateZone is set to true."
+                },
+                "createPrivateZone": {
+                    "type": "boolean",
+                    "description": "Whether or not to create a private hosted zone attached to the VPC."
+                },
+                "tags": {
+                    "type": "object",
+                    "description": "Tags to be applied to each created resource."
+                }
+            },
+            "requiredInputs": [
+                "baseCidr"
+            ],
+            "plainInputs": [
+                "createPrivateZone"
+            ],
+            "properties": {
+                "vpcId": {
+                    "type": "string",
+                    "description": "The AWS-assigned ID of the VPC"
+                }
+            },
+            "required": [
+                "vpcId"
+            ]
+        }
+    },
+    "language": {
+        "csharp": {
+            "packageReferences": {
+                "Pulumi": "3.*",
+                "Pulumi.Aws": "4.*"
+            }
+        },
+        "go": {
+            "generateResourceContainerTypes": true,
+            "importBasePath": "github.com/jaxxstorm/pulumi-vpc/sdk/go/vpc"
+        },
+        "nodejs": {
+            "dependencies": {
+                "@pulumi/aws": "^4.0.0"
+            },
+            "devDependencies": {
+                "typescript": "^3.7.0"
+            },
+            "packageName": "@jaxxstorm/pulumi-awsvpc"
+        },
+        "python": {
+            "requires": {
+                "pulumi": ">=3.0.0,<4.0.0",
+                "pulumi-aws": ">=4.0.0,<5.0.0"
+            }
+        }
+    }
+}

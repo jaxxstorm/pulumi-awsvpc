@@ -1,6 +1,7 @@
 {
-    "name": "@pulumi/xyz",
+    "name": "@jaxxstorm/pulumi-awsvpc",
     "version": "${VERSION}",
+    "license": "MPLv2",
     "scripts": {
         "build": "tsc"
     },
