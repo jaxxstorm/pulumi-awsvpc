@@ -67,7 +67,7 @@ func NewStaticPage(ctx *pulumi.Context,
 	}
 
 	// Set the access policy for the bucket so all objects are readable.
-	if _, err := s3.NewBucketPolicy(ctx, "bucketPolicy", &s3.BucketPolicyArgs{
+	if _, err := s3.NewBucketPolicy(ctx, name, &s3.BucketPolicyArgs{
 		Bucket: bucket.ID(),
 		Policy: pulumi.Any(map[string]interface{}{
 			"Version": "2012-10-17",
