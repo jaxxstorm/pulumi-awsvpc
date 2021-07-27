@@ -1,8 +1,13 @@
-import * as xyz from "@pulumi/xyz";
+import * as awsvpc from "@jaxxstorm/pulumi-awsvpc";
 
-const page = new xyz.StaticPage("page", {
-    indexContent: "<html><body><p>Hello world!</p></body></html>",
-});
 
-export const bucket = page.bucket;
-export const url = page.websiteUrl;
+const vpc = new awsvpc.Vpc("example", {
+    baseCidr: "172.0.0.0/24",
+    availabilityZoneNames: [
+        "us-west-2a",
+        "us-west-2b",
+        "us-west-2c"
+    ]
+})
+
+export const vpcId = vpc.vpcId

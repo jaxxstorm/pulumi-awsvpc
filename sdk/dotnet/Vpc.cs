@@ -13,6 +13,18 @@ namespace Pulumi.Awsvpc
     public partial class Vpc : Pulumi.ComponentResource
     {
         /// <summary>
+        /// The IDs of the created private subnets
+        /// </summary>
+        [Output("privateSubnetIds")]
+        public Output<ImmutableArray<string>> PrivateSubnetIds { get; private set; } = null!;
+
+        /// <summary>
+        /// The IDs of the created public subnets
+        /// </summary>
+        [Output("publicSubnetIds")]
+        public Output<ImmutableArray<string>> PublicSubnetIds { get; private set; } = null!;
+
+        /// <summary>
         /// The AWS-assigned ID of the VPC
         /// </summary>
         [Output("vpcId")]
@@ -47,14 +59,14 @@ namespace Pulumi.Awsvpc
     public sealed class VpcArgs : Pulumi.ResourceArgs
     {
         [Input("availabilityZoneNames", required: true)]
-        private ImmutableArray<string>? _availabilityZoneNames;
+        private List<Input<string>>? _availabilityZoneNames;
 
         /// <summary>
         /// List of availability zones to use for your VPC.
         /// </summary>
-        public ImmutableArray<string> AvailabilityZoneNames
+        public List<Input<string>> AvailabilityZoneNames
         {
-            get => _availabilityZoneNames ?? (_availabilityZoneNames = new ImmutableArray<string>());
+            get => _availabilityZoneNames ?? (_availabilityZoneNames = new List<Input<string>>());
             set => _availabilityZoneNames = value;
         }
 

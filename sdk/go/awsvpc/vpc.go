@@ -14,6 +14,10 @@ import (
 type Vpc struct {
 	pulumi.ResourceState
 
+	// The IDs of the created private subnets
+	PrivateSubnetIds pulumi.StringArrayOutput `pulumi:"privateSubnetIds"`
+	// The IDs of the created public subnets
+	PublicSubnetIds pulumi.StringArrayOutput `pulumi:"publicSubnetIds"`
 	// The AWS-assigned ID of the VPC
 	VpcId pulumi.StringOutput `pulumi:"vpcId"`
 }
@@ -25,6 +29,9 @@ func NewVpc(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
+	if args.AvailabilityZoneNames == nil {
+		return nil, errors.New("invalid value for required argument 'AvailabilityZoneNames'")
+	}
 	var resource Vpc
 	err := ctx.RegisterRemoteComponentResource("awsvpc:index:Vpc", name, args, &resource, opts...)
 	if err != nil {
@@ -53,7 +60,7 @@ type vpcArgs struct {
 // The set of arguments for constructing a Vpc resource.
 type VpcArgs struct {
 	// List of availability zones to use for your VPC.
-	AvailabilityZoneNames []string
+	AvailabilityZoneNames []pulumi.StringInput
 	// The primary CIDRv4 block to be associated with the VPC.
 	BaseCidr string
 	// Whether to create a private hosted zone attached to the VPC.

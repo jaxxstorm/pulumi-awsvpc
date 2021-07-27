@@ -20,6 +20,14 @@ export class Vpc extends pulumi.ComponentResource {
     }
 
     /**
+     * The IDs of the created private subnets
+     */
+    public /*out*/ readonly privateSubnetIds!: pulumi.Output<string[]>;
+    /**
+     * The IDs of the created public subnets
+     */
+    public /*out*/ readonly publicSubnetIds!: pulumi.Output<string[]>;
+    /**
      * The AWS-assigned ID of the VPC
      */
     public /*out*/ readonly vpcId!: pulumi.Output<string>;
@@ -48,8 +56,12 @@ export class Vpc extends pulumi.ComponentResource {
             inputs["enableS3Endpoint"] = args ? args.enableS3Endpoint : undefined;
             inputs["tags"] = args ? args.tags : undefined;
             inputs["zoneName"] = args ? args.zoneName : undefined;
+            inputs["privateSubnetIds"] = undefined /*out*/;
+            inputs["publicSubnetIds"] = undefined /*out*/;
             inputs["vpcId"] = undefined /*out*/;
         } else {
+            inputs["privateSubnetIds"] = undefined /*out*/;
+            inputs["publicSubnetIds"] = undefined /*out*/;
             inputs["vpcId"] = undefined /*out*/;
         }
         if (!opts.version) {
@@ -66,29 +78,29 @@ export interface VpcArgs {
     /**
      * List of availability zones to use for your VPC.
      */
-    readonly availabilityZoneNames: string[];
+    availabilityZoneNames: pulumi.Input<string>[];
     /**
      * The primary CIDRv4 block to be associated with the VPC.
      */
-    readonly baseCidr: string;
+    baseCidr: string;
     /**
      * Whether to create a private hosted zone attached to the VPC.
      */
-    readonly createPrivateZone?: boolean;
+    createPrivateZone?: boolean;
     /**
      * Whether to add the DynamoDB endpoint to the VPC.
      */
-    readonly enableDynamoDBEndpoint?: pulumi.Input<boolean>;
+    enableDynamoDBEndpoint?: pulumi.Input<boolean>;
     /**
      * Whether to add the S3 endpoint to the VPC.
      */
-    readonly enableS3Endpoint?: pulumi.Input<boolean>;
+    enableS3Endpoint?: pulumi.Input<boolean>;
     /**
      * Tags to be applied to each created resource.
      */
-    readonly tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
      * The name of the private zone to create if createPrivateZone is set to true.
      */
-    readonly zoneName?: pulumi.Input<string>;
+    zoneName?: pulumi.Input<string>;
 }

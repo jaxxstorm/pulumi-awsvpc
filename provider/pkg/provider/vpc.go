@@ -19,11 +19,15 @@ import (
 
 	"github.com/imdario/mergo"
 
+	awsconfig "github.com/pulumi/pulumi-aws/sdk/v4/go/aws/config"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/route53"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
+
+	"github.com/jaxxstorm/pulumi-awsvpc/pkg/convert"
 )
+
+const vpcToken = "awsvpc:index:Vpc"
 
 // The set of arguments for creating a StaticPage component resource.
 type VPCArgs struct {
@@ -41,8 +45,9 @@ type VPCArgs struct {
 type VPC struct {
 	pulumi.ResourceState
 
-	VpcID           pulumi.StringOutput  `pulumi:"vpcId"`
-	PublicSubnetIDs pulumi.IDArrayOutput `pulumi:"publicSubnetIds"`
+	VpcID            pulumi.StringOutput  `pulumi:"vpcId"`
+	PublicSubnetIDs  pulumi.IDArrayOutput `pulumi:"publicSubnetIds"`
+	PrivateSubnetIDs pulumi.IDArrayOutput `pulumi:"privateSubnetIds"`
 }
 
 func resourceTags(tags pulumi.StringMapInput, baseTags pulumi.StringMap) pulumi.StringMapInput {
@@ -58,10 +63,12 @@ func NewVPC(ctx *pulumi.Context,
 	}
 
 	component := &VPC{}
-	err := ctx.RegisterComponentResource("awsvpc:index:Vpc", name, component, opts...)
+	err := ctx.RegisterComponentResource(vpcToken, name, component, opts...)
 	if err != nil {
 		return nil, err
 	}
+
+	region := awsconfig.GetRegion(ctx)
 
 	// Create the VPC itself
 	vpc, err := ec2.NewVpc(ctx, fmt.Sprintf("%s-vpc", name), &ec2.VpcArgs{
@@ -123,7 +130,7 @@ func NewVPC(ctx *pulumi.Context,
 	// split the subnet CIDR into smaller subnets for each available zone
 	privateSubnetCIDRs, publicSubnetCIDRs, err := SubnetDistributor(args.BaseCIDR, len(args.AvailabilityZoneNames))
 	if err != nil {
-		return nil, fmt.Errorf("unable to create valid subnets") // FIXME: better error message
+		return nil, fmt.Errorf("unable to create valid subnets: %v", err) // FIXME: better error message
 	}
 
 	var privateSubnets []ec2.Subnet
@@ -257,7 +264,7 @@ func NewVPC(ctx *pulumi.Context,
 	if args.EnableS3Endpoint {
 		_, err = ec2.NewVpcEndpoint(ctx, fmt.Sprintf("%s-s3-endpoint", name), &ec2.VpcEndpointArgs{
 			VpcId:       vpc.ID(),
-			ServiceName: pulumi.String(fmt.Sprintf("com.amazonaws.%s.s3", config.Get(ctx, "aws:region"))),
+			ServiceName: pulumi.String(fmt.Sprintf("com.amazonaws.%s.s3", region)),
 		}, pulumi.Parent(vpc))
 		if err != nil {
 			return nil, err
@@ -266,7 +273,7 @@ func NewVPC(ctx *pulumi.Context,
 	if args.EnableDynamoDBEndpoint {
 		_, err = ec2.NewVpcEndpoint(ctx, fmt.Sprintf("%s-dynamodb-endpoint", name), &ec2.VpcEndpointArgs{
 			VpcId:       vpc.ID(),
-			ServiceName: pulumi.String(fmt.Sprintf("com.amazonaws.%s.dynamodb", config.Get(ctx, "aws:region"))),
+			ServiceName: pulumi.String(fmt.Sprintf("com.amazonaws.%s.dynamodb", region)),
 		}, pulumi.Parent(vpc))
 		if err != nil {
 			return nil, err
@@ -274,12 +281,16 @@ func NewVPC(ctx *pulumi.Context,
 	}
 
 	component.VpcID = vpc.ID().ToStringOutput()
-	//component.PublicSubnetIDs = publicSubnetIDs.
+	component.PublicSubnetIDs = convert.IDOutputSlicetoIDArrayOutput(publicSubnetIDs)
+	component.PrivateSubnetIDs = convert.IDOutputSlicetoIDArrayOutput(privateSubnetIDs)
 
-	if err := ctx.RegisterResourceOutputs(component, pulumi.Map{
-		"vpcId": vpc.ID(),
-		//"publicSubnetIDs": publicSubnetIDs,
-	}); err != nil {
+	outputs := pulumi.Map{
+		"vpcId":            component.VpcID,
+		"publicSubnetIds":  component.PublicSubnetIDs,
+		"privateSubnetIds": component.PrivateSubnetIDs,
+	}
+
+	if err := ctx.RegisterResourceOutputs(component, outputs); err != nil {
 		return nil, err
 	}
 

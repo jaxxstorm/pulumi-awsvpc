@@ -10,11 +10,13 @@
                     "items": {
                         "type": "string"
                     },
-                    "description": "List of availability zones to use for your VPC."
+                    "description": "List of availability zones to use for your VPC.",
+                    "plain": true
                 },
                 "baseCidr": {
                     "type": "string",
-                    "description": "The primary CIDRv4 block to be associated with the VPC."
+                    "description": "The primary CIDRv4 block to be associated with the VPC.",
+                    "plain": true
                 },
                 "zoneName": {
                     "type": "string",
@@ -22,7 +24,8 @@
                 },
                 "createPrivateZone": {
                     "type": "boolean",
-                    "description": "Whether to create a private hosted zone attached to the VPC."
+                    "description": "Whether to create a private hosted zone attached to the VPC.",
+                    "plain": true
                 },
                 "tags": {
                     "type": "object",
@@ -41,19 +44,30 @@
                 "baseCidr",
                 "availabilityZoneNames"
             ],
-            "plainInputs": [
-                "createPrivateZone",
-                "baseCidr",
-                "availabilityZoneNames"
-            ],
             "properties": {
                 "vpcId": {
                     "type": "string",
                     "description": "The AWS-assigned ID of the VPC"
+                },
+                "publicSubnetIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The IDs of the created public subnets"
+                },
+                "privateSubnetIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The IDs of the created private subnets"
                 }
             },
             "required": [
-                "vpcId"
+                "vpcId",
+                "publicSubnetIds",
+                "privateSubnetIds"
             ]
         }
     },

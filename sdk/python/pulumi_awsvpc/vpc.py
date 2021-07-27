@@ -13,7 +13,7 @@ __all__ = ['VpcArgs', 'Vpc']
 @pulumi.input_type
 class VpcArgs:
     def __init__(__self__, *,
-                 availability_zone_names: Sequence[str],
+                 availability_zone_names: Sequence[pulumi.Input[str]],
                  base_cidr: str,
                  create_private_zone: Optional[bool] = None,
                  enable_dynamo_db_endpoint: Optional[pulumi.Input[bool]] = None,
@@ -22,7 +22,7 @@ class VpcArgs:
                  zone_name: Optional[pulumi.Input[str]] = None):
         """
         The set of arguments for constructing a Vpc resource.
-        :param Sequence[str] availability_zone_names: List of availability zones to use for your VPC.
+        :param Sequence[pulumi.Input[str]] availability_zone_names: List of availability zones to use for your VPC.
         :param str base_cidr: The primary CIDRv4 block to be associated with the VPC.
         :param bool create_private_zone: Whether to create a private hosted zone attached to the VPC.
         :param pulumi.Input[bool] enable_dynamo_db_endpoint: Whether to add the DynamoDB endpoint to the VPC.
@@ -45,14 +45,14 @@ class VpcArgs:
 
     @property
     @pulumi.getter(name="availabilityZoneNames")
-    def availability_zone_names(self) -> Sequence[str]:
+    def availability_zone_names(self) -> Sequence[pulumi.Input[str]]:
         """
         List of availability zones to use for your VPC.
         """
         return pulumi.get(self, "availability_zone_names")
 
     @availability_zone_names.setter
-    def availability_zone_names(self, value: Sequence[str]):
+    def availability_zone_names(self, value: Sequence[pulumi.Input[str]]):
         pulumi.set(self, "availability_zone_names", value)
 
     @property
@@ -133,7 +133,7 @@ class Vpc(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 availability_zone_names: Optional[Sequence[str]] = None,
+                 availability_zone_names: Optional[Sequence[pulumi.Input[str]]] = None,
                  base_cidr: Optional[str] = None,
                  create_private_zone: Optional[bool] = None,
                  enable_dynamo_db_endpoint: Optional[pulumi.Input[bool]] = None,
@@ -145,7 +145,7 @@ class Vpc(pulumi.ComponentResource):
         Create a Vpc resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
-        :param Sequence[str] availability_zone_names: List of availability zones to use for your VPC.
+        :param Sequence[pulumi.Input[str]] availability_zone_names: List of availability zones to use for your VPC.
         :param str base_cidr: The primary CIDRv4 block to be associated with the VPC.
         :param bool create_private_zone: Whether to create a private hosted zone attached to the VPC.
         :param pulumi.Input[bool] enable_dynamo_db_endpoint: Whether to add the DynamoDB endpoint to the VPC.
@@ -176,7 +176,7 @@ class Vpc(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 availability_zone_names: Optional[Sequence[str]] = None,
+                 availability_zone_names: Optional[Sequence[pulumi.Input[str]]] = None,
                  base_cidr: Optional[str] = None,
                  create_private_zone: Optional[bool] = None,
                  enable_dynamo_db_endpoint: Optional[pulumi.Input[bool]] = None,
@@ -208,6 +208,8 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["enable_s3_endpoint"] = enable_s3_endpoint
             __props__.__dict__["tags"] = tags
             __props__.__dict__["zone_name"] = zone_name
+            __props__.__dict__["private_subnet_ids"] = None
+            __props__.__dict__["public_subnet_ids"] = None
             __props__.__dict__["vpc_id"] = None
         super(Vpc, __self__).__init__(
             'awsvpc:index:Vpc',
@@ -215,6 +217,22 @@ class Vpc(pulumi.ComponentResource):
             __props__,
             opts,
             remote=True)
+
+    @property
+    @pulumi.getter(name="privateSubnetIds")
+    def private_subnet_ids(self) -> pulumi.Output[Sequence[str]]:
+        """
+        The IDs of the created private subnets
+        """
+        return pulumi.get(self, "private_subnet_ids")
+
+    @property
+    @pulumi.getter(name="publicSubnetIds")
+    def public_subnet_ids(self) -> pulumi.Output[Sequence[str]]:
+        """
+        The IDs of the created public subnets
+        """
+        return pulumi.get(self, "public_subnet_ids")
 
     @property
     @pulumi.getter(name="vpcId")
